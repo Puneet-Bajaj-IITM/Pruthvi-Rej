@@ -1,0 +1,12 @@
+scikit-learn
+pypdf
+langchain_openai
+streamlit
+langchain
+langchain_core
+langchain_chroma
+langchain_community
+langchain-google-genai==1.0.5
+google-cloud-speech
+google-cloud-storage
+openai
