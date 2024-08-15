@@ -1,7 +1,7 @@
 import os
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = 'long-star-431222-t8-9e46375fea09.json'
-os.environ['OPENAI_API_KEY'] = 'sk-tGxrKMfRQwatQ76xrwLCUge970kBog4krl3OeODQQ6T3BlbkFJPLJL_kzoV1cSvfcXR36FTuy4wB9cbb6zdB3qPppt0A'
+os.environ['OPENAI_API_KEY'] = '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'
 os.environ["GOOGLE_API_KEY"] =  'AIzaSyDxiTc2ddsA5AzOAwWCs3Gez7p2s0dc4Ls'
 
 # Define the text directory
