@@ -76,7 +76,7 @@ if uploaded_files and st.button("Upload Files"):
         file_path = os.path.join(st.session_state.upload_directory, uploaded_file.name)
         with open(file_path, "wb") as f:
             f.write(uploaded_file.getvalue())
-        st.write(f"File saved at: {file_path}")
+        st.write(f"Processing File: {uploaded_file.name}")
 
     # Handle the uploaded files
     st.session_state.classification, st.session_state.file_data = handle_file_upload_with_confidence(storage_client)
@@ -91,6 +91,6 @@ if st.session_state.first_upload_complete:
             audio_file_path = os.path.join(st.session_state.audio_upload_directory, uploaded_audio_file.name)
             with open(audio_file_path, "wb") as f:
                 f.write(uploaded_audio_file.getvalue())
-            st.write(f"Audio file saved at: {audio_file_path}")
+            st.write(f"Processing Audio file: {uploaded_audio_file.name}")
 
         handle_audio_upload_with_confidence(storage_client, client, st.session_state.classification, st.session_state.file_data)

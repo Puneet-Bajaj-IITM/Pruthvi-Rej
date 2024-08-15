@@ -1,5 +1,6 @@
 from langchain_community.document_loaders import PyPDFLoader, TextLoader, UnstructuredWordDocumentLoader
 import os
+import streamlit as st
 
 def load_file(folder, f):
     pdf_files = [f for f in [f] if f.endswith('.pdf')]
@@ -19,6 +20,7 @@ def load_file(folder, f):
             loaded_docs = loader.load()
             docs.extend(loaded_docs)
         except Exception as e:
+            st.error(f"Error loading documents with {loader.__class__.__name__}: {e}, File corrupted", icon='❌')
             print(f"Error loading documents with {loader.__class__.__name__}: {e}")
     return docs
 
