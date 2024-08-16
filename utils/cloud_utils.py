@@ -44,7 +44,7 @@ def upload_embeddings_to_gcs(storage_client, similarity, embedded_text, bucket_n
             st.warning(f'No Corresponding File to {key}', icon="⚠️")
             continue
         if similarity[key] < threshold:
-            st.warning(f'Similarity below Threshold for {key}', icon="⚠️")
+            st.warning(f'Similarity ({similarity[key]}) below Threshold ({threshold}) for {key}', icon="⚠️")
             continue
         # Convert the embedding to a JSON string
         embedding_json = json.dumps(value)
