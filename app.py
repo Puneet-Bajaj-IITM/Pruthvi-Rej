@@ -80,6 +80,7 @@ if uploaded_files and st.button("Upload Files"):
 
     # Handle the uploaded files
     st.session_state.classification, st.session_state.file_data = handle_file_upload_with_confidence(storage_client)
+    print( st.session_state.classification)
     st.session_state.first_upload_complete = not all(value == '<|NO|>' for value in st.session_state.classification.values())
 
 # Show the audio file upload box only after the first step is complete
