@@ -10,3 +10,4 @@ langchain-google-genai==1.0.5
 google-cloud-speech
 google-cloud-storage
 openai
+sentence-transformers
