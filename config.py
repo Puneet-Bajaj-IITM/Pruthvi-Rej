@@ -17,7 +17,7 @@ supported_script_formats = ['pdf', 'txt', 'docx']
 
 bucket_name = 'movie-script'
 folder_name = 'embeddings'
-threshold = 0.95
+threshold = 0.7
 
 # Define audio file path
 audio_dir = 'uploads/audio'

@@ -1,17 +1,5 @@
-from sklearn.metrics.pairwise import cosine_similarity
-import numpy as np
 
-def cos_similarity(doc_embedding, audio_embedding):
-    # Ensure embeddings are 2D for scikit-learn cosine_similarity
-    doc_embedding = np.array(doc_embedding).reshape(1, -1)
-    audio_embedding = np.array(audio_embedding).reshape(1, -1)
-
-    # Compute cosine similarity
-    similarity = cosine_similarity(doc_embedding, audio_embedding)
-
-    return similarity[0][0]
-
-def compute_similarity(embedded_text):
+def compute_similarity(embedded_text, util):
     d = {}
 
     for file in embedded_text:
@@ -21,9 +9,10 @@ def compute_similarity(embedded_text):
         audio_translation_embedding = embedded_text[file]['audio_translation']
 
         # Compute similarity
-        similarity = cos_similarity(doc_content_embedding, audio_translation_embedding)
+        similarity = util.pytorch_cos_sim(doc_content_embedding, audio_translation_embedding)
+        print(similarity)
 
         # Store embeddings and similarity in dictionary
-        d[file] =  similarity
+        d[file] =  float("{:.4f}".format(similarity[0][0]))
 
     return d

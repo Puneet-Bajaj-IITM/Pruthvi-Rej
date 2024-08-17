@@ -4,3 +4,15 @@ uploads/
 uploads/*
 */uploads
 */uploads/*
+__pycache__
+/__pycache__
+__pycache__/
+__pycache__/*
+*/__pycache__
+*/__pycache__/*
+.streamlit
+.streamlit/*
+.devcontainer/*
+.devcontainer
+uploads
+uploads/*

@@ -5,6 +5,7 @@ from config import text_dir, audio_dir, supported_audio_formats, supported_scrip
 from google.cloud import storage
 from openai import OpenAI
 from file_handlers import handle_file_upload_with_confidence, handle_audio_upload_with_confidence
+from sentence_transformers import SentenceTransformer, util
 
 # Initialize storage and OpenAI clients
 storage_client = storage.Client()
@@ -44,6 +45,12 @@ if not check_password():
 # Initialize session state variables
 if 'classification' not in st.session_state:
     st.session_state.classification = {}
+
+if 'model' not in st.session_state:
+    st.session_state.model = SentenceTransformer('paraphrase-MiniLM-L12-v2')
+
+if 'util' not in st.session_state:
+    st.session_state.util = util
 
 if 'uploaded_file' not in st.session_state:
     st.session_state.uploaded_file = ''
@@ -103,7 +110,7 @@ if st.session_state.first_upload_complete:
             with open(audio_file_path, "wb") as f:
                 f.write(uploaded_audio_file.getvalue())
             st.write(f"Processing Audio file: {uploaded_audio_file.name}")
-
-        handle_audio_upload_with_confidence(storage_client, client, st.session_state.classification, st.session_state.file_data)
+        global model
+        handle_audio_upload_with_confidence(storage_client, client, st.session_state.classification, st.session_state.model, st.session_state.util)
         st.session_state.second_upload_complete = True
         st.write('Please Refresh Page to Upload New Scripts')

@@ -20,16 +20,16 @@ def handle_file_upload_with_confidence(storage_client):
     upload_directory_to_gcloud_with_confidence(classification, confidence_threshold, storage_client, text_dir, bucket_name, doc_bkt, supported_script_formats)
     return classification, file_data
     
-def handle_audio_upload_with_confidence(storage_client, client, classification, file_data):
+def handle_audio_upload_with_confidence(storage_client, client, classification, model, util):
     
     # Load the audio file
-    translated_text = get_translation_with_confidence(classification, confidence_threshold, client, file_data, audio_dir, supported_audio_formats)
+    translated_text = get_translation_with_confidence(classification, confidence_threshold, client, audio_dir, supported_audio_formats)
 
     # Embed the text
-    embedded_text = embed_text_with_confidence(classification, confidence_threshold, translated_text)
+    embedded_text = embed_text_with_confidence(classification, confidence_threshold, translated_text, model)
     
 
-    similarity = compute_similarity(embedded_text)
+    similarity = compute_similarity(embedded_text, util)
     print('Similarity' , similarity)
 
     # Save the embeddings to Embedding folder

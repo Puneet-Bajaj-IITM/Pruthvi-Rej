@@ -1,7 +1,7 @@
 import os
 import streamlit as st
 
-def get_translation_with_confidence(classification, confidence_threshold, client, file_data, audio_dir, supported_formats):
+def get_translation_with_confidence(classification, confidence_threshold, client, audio_dir, supported_formats):
     d = {}
     for audio_file in os.listdir(audio_dir):
         name = audio_file.split('.')[0]
@@ -28,7 +28,7 @@ def get_translation_with_confidence(classification, confidence_threshold, client
         )
         if file_name not in d:
             d[file_name] = {
-                "doc_content": file_data[file_name],
+                "doc_content": classification[file_name]['summary'],
                 "audio_translation": ''
             }
         d[file_name]["audio_translation"] = translation.text
