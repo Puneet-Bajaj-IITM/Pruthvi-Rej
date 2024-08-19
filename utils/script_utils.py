@@ -8,7 +8,6 @@ def classifier(temperature, llm_name):
     chat = ChatGoogleGenerativeAI(temperature=temperature,  model=llm_name)
     return chat
 
-
 def validate_scripts_with_confidence(llm, file_data):
     d = {}
     for file in file_data.keys():

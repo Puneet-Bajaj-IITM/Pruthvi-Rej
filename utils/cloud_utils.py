@@ -13,10 +13,10 @@ def upload_directory_to_gcloud_with_confidence(classification, confidence_thresh
         if name not in classification:
             continue
         if classification[name]['script'].strip() == '<|NO|>':
-            st.warning(f'{filename} doesn\'t look like a script', icon="⚠️")
+            st.write(f'{filename} doesn\'t look like a script', icon="⚠️")
             continue
         if classification[name]['confidence'] < confidence_threshold:
-            st.warning(f'{filename} below Threshold', icon="⚠️")
+            st.write(f'{filename} below Threshold', icon="⚠️")
             continue
 
         # Check if the file has a supported format
@@ -34,20 +34,28 @@ def upload_directory_to_gcloud_with_confidence(classification, confidence_thresh
             blob = bucket.blob(destination_blob_name)
             blob.upload_from_filename(file_path)
 
-            st.success(f'Identified {filename} as Script', icon="✅")
+            st.write(f'Identified {filename} as Script', icon="✅")
+
+def convert_to_json_serializable(dic):
+    json_serial = {}
+    for key, val in dic.items():
+        json_serial[key] = val.tolist()
+    return json_serial
 
 def upload_embeddings_to_gcs(storage_client, similarity, embedded_text, bucket_name, folder_name, threshold=0.7):
     bucket = storage_client.get_bucket(bucket_name)
     # Iterate over the dictionary and save each embedding as a JSON file in GCS
     for key, value in embedded_text.items():
         if key not in similarity:
-            st.warning(f'No Corresponding File to {key}', icon="⚠️")
+            st.write(f'No Corresponding File to {key}', icon="⚠️")
             continue
         if similarity[key] < threshold:
-            st.warning(f'Similarity ({similarity[key]}) below Threshold ({threshold}) for {key}', icon="⚠️")
+            st.write(f'Similarity ({similarity[key]}) below Threshold ({threshold}) for {key}', icon="⚠️")
             continue
+
         # Convert the embedding to a JSON string
-        embedding_json = json.dumps(value)
+        json_value = convert_to_json_serializable(value)
+        embedding_json = json.dumps(json_value)
 
         # Define the file path in the GCS bucket
         file_name = f'{folder_name}/{key}.json'
@@ -87,4 +95,4 @@ def upload_audio_to_gcloud(similarity, storage_client, audio_dir, bucket_name, a
             blob = bucket.blob(destination_blob_name)
             blob.upload_from_filename(file_path)
 
-            st.success(f'Identified {filename} as Narration', icon="✅")
+            st.write(f'Identified {filename} as Narration', icon="✅")

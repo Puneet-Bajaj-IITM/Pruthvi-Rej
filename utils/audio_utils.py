@@ -7,17 +7,17 @@ def get_translation_with_confidence(classification, confidence_threshold, client
         name = audio_file.split('.')[0]
 
         if name not in classification:
-            st.success(f"Document not Found", icon="❌")
+            st.write(f"Document not Found", icon="❌")
             continue
         if classification[name]['script'].strip() == '<|NO|>':
-            st.success(f"Skipping audio as its not Found to be a script", icon="❌")
+            st.write(f"Skipping audio as its not Found to be a script", icon="❌")
             continue
         if classification[name]['confidence'] < confidence_threshold:
-            st.success(f"Skipping audio as confidence below threshold ({confidence_threshold})", icon="❌")
+            st.write(f"Skipping audio as confidence below threshold ({confidence_threshold})", icon="❌")
             continue
         ext = audio_file.split('.')[1]
         if ext not in supported_formats:
-            st.success(f"Skipping audio , not in expected format", icon="❌")
+            st.write(f"Skipping audio , not in expected format", icon="❌")
             continue
         file_name = os.path.basename(audio_file).split('.')[0]
         audio_file_path = os.path.join(audio_dir, audio_file)

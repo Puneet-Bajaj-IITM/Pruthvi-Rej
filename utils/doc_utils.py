@@ -24,7 +24,6 @@ def load_file(folder, f):
             print(f"Error loading documents with {loader.__class__.__name__}: {e}")
     return docs
 
-
 def load_directory(dir):
     file_data = {}
     for file in os.listdir(dir):
