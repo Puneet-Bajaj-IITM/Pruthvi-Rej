@@ -21,10 +21,20 @@ def get_translation_with_confidence(classification, confidence_threshold, client
             continue
         file_name = os.path.basename(audio_file).split('.')[0]
         audio_file_path = os.path.join(audio_dir, audio_file)
-        audio_file = open(audio_file_path, "rb")
+        
+        MAX_FILE_SIZE = 24 * 1024 * 1024  # 24 MB
+        audio_file_size = os.path.getsize(audio_file_path)
+        
+        if audio_file_size > MAX_FILE_SIZE:
+            with open(audio_file_path, "rb") as audio_file:
+                audio_data = audio_file.read(MAX_FILE_SIZE)
+        else:
+            with open(audio_file_path, "rb") as audio_file:
+                audio_data = audio_file.read()
+                
         translation = client.audio.translations.create(
           model="whisper-1",
-          file=audio_file
+          file=audio_data
         )
         if file_name not in d:
             d[file_name] = {
