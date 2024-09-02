@@ -16,3 +16,7 @@ __pycache__/*
 .devcontainer
 uploads
 uploads/*
+human_eval
+human_eval/*
+/human_eval
+*/human_eval

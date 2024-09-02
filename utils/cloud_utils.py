@@ -35,6 +35,7 @@ def upload_directory_to_gcloud_with_confidence(classification, confidence_thresh
             blob.upload_from_filename(file_path)
 
             st.write(f'Identified {filename} as Script', icon="✅")
+        os.remove(file_path)
 
 def convert_to_json_serializable(dic):
     json_serial = {}
@@ -68,6 +69,7 @@ def upload_embeddings_to_gcs(storage_client, similarity, embedded_text, bucket_n
 
         print(f'Successfully uploaded {key}.json to {bucket_name}/{file_name}')
         
+        
 def upload_audio_to_gcloud(similarity, storage_client, audio_dir, bucket_name, audio_bkt, supported_formats, threshold):
     # Iterate over all files in the specified directory
     for filename in os.listdir(audio_dir):
@@ -96,3 +98,4 @@ def upload_audio_to_gcloud(similarity, storage_client, audio_dir, bucket_name, a
             blob.upload_from_filename(file_path)
 
             st.write(f'Identified {filename} as Narration', icon="✅")
+        os.remove(file_path)

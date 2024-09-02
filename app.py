@@ -106,7 +106,7 @@ st.session_state.movie_name = st.text_input(
     label='Movie Name', placeholder='Enter Movie Name here.......')
 if st.session_state.movie_name:
     st.session_state.lang = st.text_input(
-        label='Movie Lnaguage', placeholder='Enter Movie Language here.........')
+        label='Movie Language', placeholder='Enter Movie Language here.........')
 if st.session_state.movie_name and st.session_state.lang:
     st.write('Drag a Script to below box 👇')
     st.session_state.uploaded_file = st.file_uploader(

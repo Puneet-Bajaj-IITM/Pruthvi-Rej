@@ -20,6 +20,7 @@ def get_translation_with_confidence(classification, confidence_threshold, client
             st.write(f"Skipping audio , not in expected format", icon="❌")
             continue
         file_name = os.path.basename(audio_file).split('.')[0]
+        ext = os.path.basename(audio_file).split('.')[1]
         audio_file_path = os.path.join(audio_dir, audio_file)
         
         MAX_FILE_SIZE = 24 * 1024 * 1024  # 24 MB
@@ -27,10 +28,17 @@ def get_translation_with_confidence(classification, confidence_threshold, client
         
         if audio_file_size > MAX_FILE_SIZE:
             with open(audio_file_path, "rb") as audio_file:
-                audio_data = audio_file.read(MAX_FILE_SIZE)
+                partial_audio_data = audio_file.read(MAX_FILE_SIZE)
+                
+            partial_file_path = f'uploads/{file_name}.{ext}'
+            with open(partial_file_path, "wb") as partial_audio_file:
+                partial_audio_file.write(partial_audio_data)
+
+            # Read back the saved partial file
+            audio_data = open(partial_file_path, "rb")
+            os.remove(partial_file_path)
         else:
-            with open(audio_file_path, "rb") as audio_file:
-                audio_data = audio_file.read()
+            audio_data = open(audio_file_path, "rb") 
                 
         translation = client.audio.translations.create(
           model="whisper-1",
