@@ -4,12 +4,25 @@ import json
 import os
 
 def upload_directory_to_gcloud_with_confidence(classification, confidence_threshold, storage_client, directory_path, bucket_name, folder_name, supported_formats):
+    """
+    Uploads files from a local directory to Google Cloud Storage (GCS) if they meet certain criteria.
+    
+    Args:
+        classification (dict): A dictionary where keys are filenames (without extension) and values are dicts 
+                                containing 'script' and 'confidence' fields.
+        confidence_threshold (float): Minimum confidence required for a file to be uploaded.
+        storage_client (google.cloud.storage.Client): Google Cloud Storage client.
+        directory_path (str): Local path to the directory containing files to be uploaded.
+        bucket_name (str): Name of the GCS bucket where files will be uploaded.
+        folder_name (str): Folder name within the bucket where files will be stored.
+        supported_formats (list): List of file extensions that are supported for upload.
+    """
     # Iterate over all files in the specified directory
     for filename in os.listdir(directory_path):
         file_path = os.path.join(directory_path, filename)
-
         name = filename.split('.')[0]
 
+        # Check if the file is classified and meets the confidence threshold
         if name not in classification:
             continue
         if classification[name]['script'].strip() == '<|NO|>':
@@ -38,13 +51,34 @@ def upload_directory_to_gcloud_with_confidence(classification, confidence_thresh
         os.remove(file_path)
 
 def convert_to_json_serializable(dic):
+    """
+    Converts a dictionary with numpy arrays to a JSON-serializable dictionary.
+
+    Args:
+        dic (dict): Dictionary where values are numpy arrays.
+    
+    Returns:
+        dict: JSON-serializable dictionary with arrays converted to lists.
+    """
     json_serial = {}
     for key, val in dic.items():
         json_serial[key] = val.tolist()
     return json_serial
 
 def upload_embeddings_to_gcs(storage_client, similarity, embedded_text, bucket_name, folder_name, threshold=0.7):
+    """
+    Uploads embedding files to Google Cloud Storage (GCS) if they meet a similarity threshold.
+
+    Args:
+        storage_client (google.cloud.storage.Client): Google Cloud Storage client.
+        similarity (dict): Dictionary where keys are identifiers and values are similarity scores.
+        embedded_text (dict): Dictionary where keys are identifiers and values are embedding data.
+        bucket_name (str): Name of the GCS bucket where files will be uploaded.
+        folder_name (str): Folder name within the bucket where files will be stored.
+        threshold (float, optional): Minimum similarity score required for a file to be uploaded. Defaults to 0.7.
+    """
     bucket = storage_client.get_bucket(bucket_name)
+    
     # Iterate over the dictionary and save each embedding as a JSON file in GCS
     for key, value in embedded_text.items():
         if key not in similarity:
@@ -69,14 +103,25 @@ def upload_embeddings_to_gcs(storage_client, similarity, embedded_text, bucket_n
 
         print(f'Successfully uploaded {key}.json to {bucket_name}/{file_name}')
         
-        
 def upload_audio_to_gcloud(similarity, storage_client, audio_dir, bucket_name, audio_bkt, supported_formats, threshold):
+    """
+    Uploads audio files from a local directory to Google Cloud Storage (GCS) if they meet a similarity threshold.
+
+    Args:
+        similarity (dict): Dictionary where keys are filenames (without extension) and values are similarity scores.
+        storage_client (google.cloud.storage.Client): Google Cloud Storage client.
+        audio_dir (str): Local path to the directory containing audio files to be uploaded.
+        bucket_name (str): Name of the GCS bucket where files will be uploaded.
+        audio_bkt (str): Folder name within the bucket where audio files will be stored.
+        supported_formats (list): List of file extensions that are supported for upload.
+        threshold (float): Minimum similarity score required for a file to be uploaded.
+    """
     # Iterate over all files in the specified directory
     for filename in os.listdir(audio_dir):
         file_path = os.path.join(audio_dir, filename)
-
         name = filename.split('.')[0]
 
+        # Check if the file is classified and meets the similarity threshold
         if name not in similarity:
             continue
         if similarity[name] < threshold:

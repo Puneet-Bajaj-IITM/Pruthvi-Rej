@@ -9,27 +9,33 @@ from openai import OpenAI
 from file_handlers import handle_file_upload_with_confidence, handle_audio_upload_with_confidence
 from sentence_transformers import SentenceTransformer, util
 
-# Initialize storage and OpenAI clients
+# Initialize Google Cloud Storage and OpenAI clients
 storage_client = storage.Client()
 client = OpenAI()
 
-
 def check_password():
-    """Returns `True` if the user had the correct password."""
-
+    """
+    Checks if the user has entered the correct password.
+    
+    Returns:
+        bool: `True` if the password is correct, `False` otherwise.
+    """
     def password_entered():
-        """Checks whether a password entered by the user is correct."""
+        """
+        Validates the password entered by the user against the stored password.
+        Sets session state variable `password_correct` based on validation.
+        """
         if hmac.compare_digest(st.session_state["password"], st.secrets["password"]):
             st.session_state["password_correct"] = True
-            del st.session_state["password"]  # Don't store the password.
+            del st.session_state["password"]  # Do not store the password.
         else:
             st.session_state["password_correct"] = False
 
-    # Return True if the password is validated.
+    # Return True if the password has already been validated
     if st.session_state.get("password_correct", False):
         return True
 
-    # Show input for password.
+    # Display a password input field if not yet validated
     st.text_input(
         "Password", type="password", on_change=password_entered, key="password"
     )
@@ -37,11 +43,11 @@ def check_password():
         st.error("😕 Password incorrect")
     return False
 
-
+# Stop execution if password validation fails
 if not check_password():
-    st.stop()  # Do not continue if check_password is not True.
+    st.stop()
 
-# Initialize session state variables
+# Initialize session state variables if not already set
 if 'classification' not in st.session_state:
     st.session_state.classification = {}
 
@@ -84,7 +90,7 @@ if 'first_upload_complete' not in st.session_state:
 if 'second_upload_complete' not in st.session_state:
     st.session_state.second_upload_complete = False
 
-# Ensure the text directory is ready for use
+# Ensure necessary directories exist
 upload_directory = text_dir
 if os.path.exists(upload_directory):
     shutil.rmtree(upload_directory)
@@ -98,20 +104,22 @@ if os.path.exists(audio_upload_directory):
     shutil.rmtree(audio_upload_directory)
 os.makedirs(audio_upload_directory)
 
+# Update session state with directory paths
 st.session_state.audio_upload_directory = audio_upload_directory
 st.session_state.upload_directory = upload_directory
 
-# File uploader widget for general files
+# File uploader widget for script files
 st.session_state.movie_name = st.text_input(
     label='Movie Name', placeholder='Enter Movie Name here.......')
 if st.session_state.movie_name:
     st.session_state.lang = st.text_input(
         label='Movie Language', placeholder='Enter Movie Language here.........')
 if st.session_state.movie_name and st.session_state.lang:
-    st.write('Drag a Script to below box 👇')
+    st.write('Drag a Script to the box below 👇')
     st.session_state.uploaded_file = st.file_uploader(
         "Upload a Script", type=supported_script_formats, accept_multiple_files=False)
 
+# Process the uploaded script file
 if st.session_state.uploaded_file:
     file_name = f"{st.session_state.movie_name}-{st.session_state.lang}-001.{st.session_state.uploaded_file.name.split('.')[-1]}"
     file_path = os.path.join(st.session_state.upload_directory, file_name)
@@ -121,7 +129,7 @@ if st.session_state.uploaded_file:
     st.write(f"Processing File: {st.session_state.uploaded_file.name}")
     st.session_state.uploaded_file = file_name.split('.')[0]
 
-    # Handle the uploaded files
+    # Handle the uploaded script file
     st.session_state.classification, st.session_state.file_data = handle_file_upload_with_confidence()
     st.session_state.first_upload_complete = not all(value.get(
         'script') == '<|NO|>' for value in st.session_state.classification.values())
@@ -131,23 +139,21 @@ if st.session_state.uploaded_file:
     else:
         st.write('Identified as a Script ✅')
 
-
-# Show the audio file upload box only after the first step is complete
+# Show the audio file upload box if the first step is complete
 if st.session_state.first_upload_complete:
-    st.write('Drag Narration to below box 👇')
+    st.write('Drag Narration to the box below 👇')
     uploaded_audio_file = st.file_uploader(
         "Upload Corresponding Narration", type=supported_audio_formats, accept_multiple_files=False)
 
+    # Process the uploaded audio file
     if uploaded_audio_file:
-
         audio_file_path = os.path.join(st.session_state.audio_upload_directory,
-                                           st.session_state.uploaded_file + '.' + uploaded_audio_file.name.split('.')[-1])
+                                       st.session_state.uploaded_file + '.' + uploaded_audio_file.name.split('.')[-1])
         st.session_state.audio_file_path = audio_file_path
 
         with open(audio_file_path, "wb") as f:
             f.write(uploaded_audio_file.getvalue())
         st.write(f"Processing Audio file: {uploaded_audio_file.name}")
-        global model
         similarity_below_thresh = handle_audio_upload_with_confidence(storage_client, client, st.session_state.classification, st.session_state.model, st.session_state.util)
         if similarity_below_thresh:
             st.write('Similarity below threshold ❌')
