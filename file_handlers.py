@@ -59,19 +59,19 @@ def handle_audio_upload_with_confidence(storage_client, client, classification, 
     if not all(value >= threshold for value in similarity.values()):
         return True
 
-    # Upload the validated scripts to Google Cloud Storage
-    upload_directory_to_gcloud_with_confidence(
-        classification, confidence_threshold, storage_client, text_dir, bucket_name, doc_bkt, supported_script_formats
-    )
+    # # Upload the validated scripts to Google Cloud Storage
+    # upload_directory_to_gcloud_with_confidence(
+    #     classification, confidence_threshold, storage_client, text_dir, bucket_name, doc_bkt, supported_script_formats
+    # )
 
-    # Save the embeddings to Google Cloud Storage
-    upload_embeddings_to_gcs(
-        storage_client, similarity, embedded_text, bucket_name, folder_name, threshold
-    )
+    # # Save the embeddings to Google Cloud Storage
+    # upload_embeddings_to_gcs(
+    #     storage_client, similarity, embedded_text, bucket_name, folder_name, threshold
+    # )
 
-    # Upload the audio files to Google Cloud Storage
-    upload_audio_to_gcloud(
-        similarity, storage_client, audio_dir, bucket_name, audio_bkt, supported_audio_formats, threshold
-    )
+    # # Upload the audio files to Google Cloud Storage
+    # upload_audio_to_gcloud(
+    #     similarity, storage_client, audio_dir, bucket_name, audio_bkt, supported_audio_formats, threshold
+    # )
     
     return False
