@@ -57,7 +57,7 @@ def upload_narration():
         if similarity_below_thresh:
             return jsonify({"error": "Similarity below threshold ❌"}), 400
                 
-        return jsonify({"message": "Files saved successfully !! ✅"}), 200
+        return jsonify({"message": "Audio file is the narration of uploaded script !! ✅"}), 200
             
     return jsonify({"error": "No audio File uploaded"}), 400
 
