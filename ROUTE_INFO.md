@@ -82,5 +82,5 @@ curl -X POST http://localhost:5000/upload/narration \
 3. **Running the Server**:
    ```bash
    pip install -r requirements.txt
-   python app.py
+   python flask_app.py
    ```
