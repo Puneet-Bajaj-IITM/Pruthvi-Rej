@@ -1,6 +1,3 @@
-Here's a comprehensive `README.md` for your codebase that explains its functionality and usage. This should help other developers understand the structure of your project and how to extend it.
-
----
 
 # Movie Script and Audio Processing App
 
@@ -128,7 +125,3 @@ Contributions are welcome! Please fork the repository and submit pull requests f
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
-
----
-
-Feel free to adjust the README to better fit any additional details or specific instructions relevant to your project.
