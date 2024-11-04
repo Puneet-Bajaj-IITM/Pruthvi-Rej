@@ -18,42 +18,48 @@ client = OpenAI()
 # Initialize sentence transformer model
 model = SentenceTransformer('paraphrase-MiniLM-L12-v2')
 
-@app.route('/upload', methods=['POST'])
-def upload():
-    password = request.form.get('password')
-    if password == os.environ['PASSWORD']:  # Store the password in environment variables
-        session['logged_in'] = True    
-    else:          
-        return "Password incorrect", 403
+@app.route('/upload/script', methods=['POST'])
+def upload_script():
 
-    if session.get('logged_in'):
-        movie_name = request.form.get('movie_name')
-        lang = request.form.get('lang')
-        script_file = request.files.get('script_file')
-        audio_file = request.files.get('audio_file')
+    movie_name = request.form.get('movie_name')
+    lang = request.form.get('lang')
+    script_file = request.files.get('script_file')
 
-        if script_file:
-            file_name = f"{movie_name}-{lang}-001.{script_file.filename.split('.')[-1]}"
-            script_path = os.path.join(text_dir, file_name)
-            script_file.save(script_path)
-            classification, file_data = handle_file_upload_with_confidence()
-            first_upload_complete = not all(value.get('script') == '<|NO|>' for value in classification.values())
+    if script_file:
+        file_name = f"{movie_name}-{lang}-001.{script_file.filename.split('.')[-1]}"
+        script_path = os.path.join(text_dir, file_name)
+        script_file.save(script_path)
+        classification, file_data = handle_file_upload_with_confidence()
+        session['classification'] = classification 
+        first_upload_complete = not all(value.get('script') == '<|NO|>' for value in classification.values())
 
-            if not first_upload_complete:
-                return jsonify({"error": "Not a Script ❌"}), 400
+    if not first_upload_complete:
+        return jsonify({"error": "Not a Script ❌"}), 400
+        
+    return jsonify({"message": "Script uploaded successfully."}), 200
             
-            # If script upload is complete, handle audio upload
-            if audio_file:
-                audio_path = os.path.join(audio_dir, f"{file_name.split('.')[0]}.{audio_file.filename.split('.')[-1]}")
-                audio_file.save(audio_path)
 
-                similarity_below_thresh = handle_audio_upload_with_confidence(storage_client, client, classification, model, util)
-                if similarity_below_thresh:
-                    return jsonify({"error": "Similarity below threshold ❌"}), 400
+@app.route('/upload/narration', methods=['POST'])
+def upload_narration():
+
+    movie_name = request.form.get('movie_name')
+    lang = request.form.get('lang')
+    audio_file = request.files.get('audio_file')
+    
+    if audio_file:
+        audio_path = os.path.join(audio_dir, f"{movie_name}-{lang}-001.{audio_file.filename.split('.')[-1]}")
+        audio_file.save(audio_path)
+
+        # Retrieve classification from session if needed
+        classification = session.get('classification', {})
+
+        similarity_below_thresh = handle_audio_upload_with_confidence(storage_client, client, classification, model, util)
+        if similarity_below_thresh:
+            return jsonify({"error": "Similarity below threshold ❌"}), 400
                 
-                return jsonify({"message": "Files saved successfully !! ✅"}), 200
+        return jsonify({"message": "Files saved successfully !! ✅"}), 200
             
-            return jsonify({"message": "Script uploaded successfully."}), 200
+    return jsonify({"error": "No audio File uploaded"}), 400
 
 
 if __name__ == '__main__':
