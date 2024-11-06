@@ -214,15 +214,34 @@ def generate_video(scenes_data):
     prompts = make_prompts(scenes_data)
     videos = video_gen(prompts)
     print(videos)
-    output_path = download_video(videos)
+    output_path = download_videos(videos)
     print(output_path)
     return 'final_video.mp4'
 
 import requests
 from moviepy.editor import concatenate_videoclips, VideoFileClip
 
+import requests
 
-def download_video(output_runway):
+def download_v(url, index):
+    # Send a GET request to the URL to fetch the video content
+    response = requests.get(url)
+    
+    # Check if the request was successful (status code 200)
+    if response.status_code == 200:
+        # Define the filename with the index as part of the name
+        filename = f"video_{index}.mp4"
+        
+        # Open the file in write-binary mode and save the content
+        with open(filename, 'wb') as file:
+            file.write(response.content)
+        
+        print(f"Video saved as {filename}")
+    else:
+        print(f"Failed to download video from {url}")
+        
+
+def download_videos(output_runway):
 
     video_urls = []
 
@@ -230,7 +249,7 @@ def download_video(output_runway):
         video_urls.append(output.output[0])
 
     # Download videos and store their file paths
-    video_files = [download_video(url, i) for i, url in enumerate(video_urls)]
+    video_files = [download_v(url, i) for i, url in enumerate(video_urls)]
 
     # Load the downloaded videos using moviepy
     video_clips = [VideoFileClip(file) for file in video_files]
