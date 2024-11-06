@@ -1,14 +1,4 @@
-scikit-learn
-pypdf
-langchain_openai
+langchain-ollama
+runwayml
 streamlit
-langchain
-langchain_core
-langchain_chroma
-langchain_community
-langchain-google-genai==1.0.5
-google-cloud-speech
-google-cloud-storage
-openai
-sentence-transformers
-Flask
+moviepy
