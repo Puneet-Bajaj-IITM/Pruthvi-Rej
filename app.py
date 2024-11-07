@@ -222,34 +222,57 @@ import requests
 from moviepy.editor import concatenate_videoclips, VideoFileClip
 
 import requests
+from moviepy.editor import VideoFileClip, concatenate_videoclips
+import requests
+import requests
+import time
 
-def download_v(url, index):
-    # Send a GET request to the URL to fetch the video content
-    response = requests.get(url)
+def download_v(url, index, max_retries=5, retry_delay=5):
+    attempt = 0
     
-    # Check if the request was successful (status code 200)
-    if response.status_code == 200:
-        # Define the filename with the index as part of the name
-        filename = f"video_{index}.mp4"
+    while attempt < max_retries:
+        attempt += 1
+        print(f"Attempt {attempt} to download video {index} from {url}")
         
-        # Open the file in write-binary mode and save the content
-        with open(filename, 'wb') as file:
-            file.write(response.content)
+        # Send a GET request to the URL to fetch the video content
+        response = requests.get(url)
         
-        print(f"Video saved as {filename}")
-    else:
-        print(f"Failed to download video from {url}")
-        
+        # Check if the request was successful (status code 200)
+        if response.status_code == 200:
+            # Define the filename with the index as part of the name
+            filename = f"video_{index}.mp4"
+            
+            # Open the file in write-binary mode and save the content
+            with open(filename, 'wb') as file:
+                file.write(response.content)
+            
+            print(f"Video saved as {filename}")
+            return filename
+        else:
+            print(f"Failed to download video from {url} (Attempt {attempt}/{max_retries})")
+            if attempt < max_retries:
+                print(f"Retrying in {retry_delay} seconds...")
+                time.sleep(retry_delay)  # Wait before retrying
+            else:
+                print("Max retries reached. Moving to next video.")
+    
+    # Return None if all retry attempts failed
+    return None
+
 
 def download_videos(output_runway):
-
-    video_urls = []
-
-    for output in output_runway:
-        video_urls.append(output.output[0])
+    video_urls = [output.output[0] for output in output_runway]
 
     # Download videos and store their file paths
     video_files = [download_v(url, i) for i, url in enumerate(video_urls)]
+    
+    # Filter out any None values in video_files (failed downloads)
+    video_files = [file for file in video_files if file is not None]
+
+    # Ensure that there are video files to process
+    if not video_files:
+        print("No videos downloaded successfully.")
+        return None
 
     # Load the downloaded videos using moviepy
     video_clips = [VideoFileClip(file) for file in video_files]
@@ -262,6 +285,7 @@ def download_videos(output_runway):
 
     print("Video concatenation complete. Saved as 'final_video.mp4'.")
     return "final_video.mp4"
+
 
 
 import streamlit as st
