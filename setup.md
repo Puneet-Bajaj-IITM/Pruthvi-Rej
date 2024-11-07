@@ -1,6 +1,4 @@
-Here's a `setup.md` file that your client can follow to set up the environment on their server. This includes all the necessary commands for cloning your repository, setting up the virtual environment, installing dependencies, and running the app.
 
----
 
 # Server Setup Guide for Pruthvi-Rej
 
