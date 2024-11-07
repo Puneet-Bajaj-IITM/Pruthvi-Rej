@@ -16,6 +16,7 @@ Clone the project repository from GitHub.
 
 ```bash
 mkdir runway
+cd runway
 git clone https://github.com/Puneet-Bajaj-IITM/Pruthvi-Rej.git
 ```
 
@@ -23,7 +24,7 @@ git clone https://github.com/Puneet-Bajaj-IITM/Pruthvi-Rej.git
 Change to the project directory.
 
 ```bash
-cd runway/Pruthvi-Rej
+cd Pruthvi-Rej
 ```
 
 ### 4. **Create and Checkout a New Branch**
